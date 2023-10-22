@@ -1,22 +1,36 @@
 import React, { useState } from 'react';
-import api from '../../services/Api';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/Api'
+import './Style.css'
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = async () => {
+  const navigate = useNavigate(); // Create a history object
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+  
     try {
-      const response = await api.signIn(username, password); // Replace 'api.signIn' with your actual API endpoint
-      // Handle successful login
-      console.log('Login successful', response);
+      const response = await api.login(username, password);
+  
+      const token = response.data;
+  
+      if (token) {
+        localStorage.setItem('token', token);
+        navigate('/dashboard');
+      } else {
+        console.error('Token not found in the response');
+      }
     } catch (error) {
-      // Handle login error
       console.error('Login error', error);
     }
   }
+  
 
   return (
+    <div className="form-toggle">
     <form className="sign-in-form" id="sign-in-form">
       <input
         type="email"
@@ -35,6 +49,7 @@ function Login() {
       />
       <button onClick={handleSignIn}  id="sign-in-btn" >Sign In</button>
     </form>
+    </div>
   );
 }
 

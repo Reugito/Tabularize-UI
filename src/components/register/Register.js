@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import api from '../../services/Api';
+import { useNavigate } from 'react-router-dom';
+
+import '../login/Style.css'
 
 function Register() {
   const [name, setName] = useState('');
@@ -7,24 +10,32 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = async () => {
+  const navigate = useNavigate();
+  const handleRegister = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+
     if (password !== confirmPassword) {
-      // Handle password mismatch error
+      alert("Password Not Matching");
       return;
     }
 
     try {
       const userData = { name, email, password };
       const response = await api.register(userData);
-      // Handle successful registration
-      console.log('Registration successful', response);
+
+      if (response.status === true) {
+        window.location.reload();
+      }
+
+      alert('Registration successful', response);
     } catch (error) {
-      // Handle registration error
-      console.error('Registration error', error);
+      alert('Registration error', error);
     }
   }
 
   return (
+
+    <div className="form-toggle">
     <form className="sign-up-form" id="sign-up-form">
       <input
         type="text"
@@ -54,8 +65,9 @@ function Register() {
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
       />
-      <button onClick={handleRegister} id="sign-up-btn">Sign Up</button>
+      <button type="button" onClick={handleRegister} id="sign-up-btn">Sign Up</button>
     </form>
+    </div>
   );
 }
 

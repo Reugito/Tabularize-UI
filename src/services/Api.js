@@ -1,8 +1,12 @@
-
+import { Navigate } from 'react-router-dom'; 
 const API_BASE_URL = "http://localhost:8080/api";
 
-const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoicmFvQHlvcG1haWwuY29tIn0.Nt5fH12R3a1Czsi1EE3Mp9AZJDHRyOxil4txr-L2HiI"
+const token = localStorage.getItem('token');
 
+  if (!token) {
+    // If token is not present, redirect to the login page
+     <Navigate to="/login" />;
+  }
 const handleResponse = async (response) => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -52,11 +56,11 @@ const commonApi = {
   },
 
   login(username, password) {
-    return commonApi.request('/login', 'POST', { username, password });
+    return commonApi.request('/auth/login', 'POST', { username, password });
   },
 
-  register(name, email, password) {
-    return commonApi.request('/register', 'POST', { name, email, password });
+  register(data) {
+    return commonApi.request('/auth/register', 'POST', data);
   },
 
   uploadFile(formData) {

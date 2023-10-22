@@ -3,7 +3,7 @@ import Register from '../register/Register';
 import Login from './Login';
 import './Style.css'
 
-function FrontPages() {
+function Home() {
   const [showLogin, setShowLogin] = useState(true);
   return (
     <>
@@ -27,9 +27,8 @@ function FrontPages() {
             </button>
           </div>
 
-          <div className="form-toggle">
+          
             {showLogin ? <Login /> : <Register />}
-          </div>
           
         </div>
       </div>
@@ -37,4 +36,4 @@ function FrontPages() {
   );
 }
 
-export default FrontPages;
+export default Home;
