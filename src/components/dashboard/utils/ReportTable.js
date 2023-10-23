@@ -1,11 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { useTable, usePagination } from 'react-table';
+import * as React from "react";
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import api from '../../../services/Api';
-import './ReportTable.css'; // Add a CSS file for styling
+import { useState, useEffect } from 'react';
+import { TablePagination } from "@mui/material";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
 
 function ReportTable() {
   const [data, setData] = useState([]);
-  const [pageIndex, setPageIndex] = useState(0);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,107 +51,54 @@ function ReportTable() {
         const response = await api.getUploadedData();
         setData(response.data);
       } catch (error) {
-        // Handle error
       }
     };
 
     fetchData();
   }, []);
 
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'ID',
-        accessor: 'id',
-      },
-      {
-        Header: 'User ID',
-        accessor: 'userId',
-      },
-      {
-        Header: 'Title',
-        accessor: 'title',
-      },
-      {
-        Header: 'Body',
-        accessor: 'body',
-      },
-    ],
-    []
-  );
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    pageOptions,
-    gotoPage,
-    nextPage,
-    previousPage,
-    canNextPage,
-    canPreviousPage,
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageIndex }, // Set initial page index
-    },
-    usePagination
-  );
+  
 
   return (
-    <div>
-      <table {...getTableProps()} className="table">
-      <thead>
-        {headerGroups.map((headerGroup) => (
-    <tr {...headerGroup.getHeaderGroupProps()}>
-      {headerGroup.headers.map((column) => (
-        <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-      ))}
-    </tr>
-  ))}
-</thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={pageIndex === 0}>
-          {'<<'}
-        </button>
-        <button onClick={previousPage} disabled={!canPreviousPage}>
-          {'<'}
-        </button>
-        <span>
-          Page{' '}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <button onClick={nextPage} disabled={!canNextPage}>
-          {'>'}
-        </button>
-        <button
-          onClick={() => gotoPage(pageOptions.length - 1)}
-          disabled={pageIndex === pageOptions.length - 1}
-        >
-          {'>>'}
-        </button>
-      </div>
-    </div>
+    <TableContainer component={Paper} sx={{ maxWidth: 650 }}>
+      <Table aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell align="center">Id</StyledTableCell>
+            <StyledTableCell align="center">UserId</StyledTableCell>
+            <StyledTableCell align="center">Title</StyledTableCell>
+            <StyledTableCell align="center">Body</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data
+            .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+            .map((row) => (
+              <StyledTableRow
+                key={row.id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <StyledTableCell component="th" scope="row">
+                  {row.id}
+                </StyledTableCell>
+                <StyledTableCell align="left">{row.userId}</StyledTableCell>
+                <StyledTableCell align="left">{row.title}</StyledTableCell>
+                <StyledTableCell align="left">{row.body}</StyledTableCell>
+              </StyledTableRow>
+            ))}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]} // You can customize the options
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </TableContainer>
+
   );
 }
 

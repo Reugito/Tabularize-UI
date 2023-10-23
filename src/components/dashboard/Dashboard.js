@@ -2,6 +2,7 @@ import React from 'react';
 import FileUpload from './utils/FileUpload';
 import ReportTable from './utils/ReportTable';
 import { Navigate } from 'react-router-dom'; 
+import LeftMenu from '../menu/LeftMenu';
 
 function Dashboard() {
 
@@ -14,8 +15,10 @@ function Dashboard() {
 
   return (
     <div>
+      <LeftMenu/>
       <FileUpload />
       <ReportTable />
+      
     </div>
   );
 }
