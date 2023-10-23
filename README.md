@@ -11,11 +11,7 @@ THIS IS A UI Part of the project where you can find...
 
 
 ## Run Locally
-```bash
-React.js - For UserInterface,
-Java - For Backend Integration,
-postgreSQL - For Batabase.
-```
+
 Clone the project
 
 ```bash
