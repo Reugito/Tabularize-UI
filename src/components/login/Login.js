@@ -31,12 +31,11 @@ function Login() {
 
       const response = await api.login(username, password);
 
-      if(response.status == true){
-      }else{
+      if(response.status == false){
         setAlertMessage("Failed: "+ response.message)
-      }
-  
-      const token = response.data;
+        
+      }else{
+        const token = response.data;
   
       if (token) {
         localStorage.setItem('token', token);
@@ -45,6 +44,10 @@ function Login() {
       } else {
         setAlertMessage('Token not found in the response');
       }
+        
+      }
+  
+      
     } catch (error) {
       setAlertMessage('Login error'+ error.message);
     }
