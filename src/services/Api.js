@@ -1,12 +1,9 @@
 import { Navigate } from 'react-router-dom'; 
 const API_BASE_URL = "http://localhost:8080/api";
 
-const token = localStorage.getItem('token');
+const getToken = () => localStorage.getItem('token'); 
 
-  if (!token) {
-    // If token is not present, redirect to the login page
-     <Navigate to="/" />;
-  }
+
 const handleResponse = async (response) => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -17,6 +14,12 @@ const handleResponse = async (response) => {
 };
 const commonApi = {
   async request(url, method = 'GET', data = null, headers = {}) {
+
+    let token = getToken()
+    if (!token){
+      <Navigate to="/" />
+    }
+
     const requestOptions = {
       method,
       headers: {
@@ -39,6 +42,10 @@ const commonApi = {
   },
 
   async requestMultipart(url, method = 'POST', data = null, headers = {}) {
+    let token = getToken()
+    if (!token){
+      <Navigate to="/" />
+    }
     const requestOptions = {
       method,
       headers: {
