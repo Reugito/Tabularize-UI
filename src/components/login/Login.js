@@ -2,10 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/Api'
 import './Style.css'
+import AlertDialog from "../alerts/AlertDialog";
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const closeAlert = () => {
+    setAlertOpen(false);
+  }
 
   const navigate = useNavigate(); // Create a history object
 
@@ -13,19 +21,34 @@ function Login() {
     e.preventDefault();
   
     try {
+
+
+      if(username == "" || password == ""){
+        setAlertMessage("Mandatory Fields are Missing")
+        setAlertOpen(true)
+        return
+      }
+
       const response = await api.login(username, password);
+
+      if(response.status == true){
+      }else{
+        setAlertMessage("Failed: "+ response.message)
+      }
   
       const token = response.data;
   
       if (token) {
         localStorage.setItem('token', token);
+        localStorage.setItem('username', username);
         navigate('/dashboard');
       } else {
-        console.error('Token not found in the response');
+        setAlertMessage('Token not found in the response');
       }
     } catch (error) {
-      console.error('Login error', error);
+      setAlertMessage('Login error'+ error.message);
     }
+    setAlertOpen(true)
   }
   
 
@@ -45,10 +68,13 @@ function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         className="password"
-        required
+        required={true}
       />
       <button onClick={handleSignIn}  id="sign-in-btn" >Sign In</button>
     </form>
+
+    <AlertDialog open={alertOpen} message={alertMessage} onClose={closeAlert} />
+
     </div>
   );
 }

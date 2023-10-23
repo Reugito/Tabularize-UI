@@ -10,6 +10,8 @@ import Paper from '@mui/material/Paper';
 import api from '../../../services/Api';
 import { useState, useEffect } from 'react';
 import { TablePagination } from "@mui/material";
+import FileUpload from "./FileUpload";
+import AlertDialog from "../../alerts/AlertDialog";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,6 +38,13 @@ function ReportTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const closeAlert = () => {
+    setAlertOpen(false);
+  }
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -45,22 +54,35 @@ function ReportTable() {
     setPage(0);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.getUploadedData();
+  const fetchData = async () => {
+    try {
+      const response = await api.getUploadedData();
+      if (response.status == true){
         setData(response.data);
-      } catch (error) {
+        setAlertMessage('Success: ' + response.message);
+      }else{
+        window.location.reload()
       }
-    };
+    } catch (error) {
+      setAlertMessage('File upload error: ' + error.message);
+
+    }
+    setAlertOpen(true);
+  };
+
+  useEffect(() => {
 
     fetchData();
   }, []);
 
-  
+  function callbackFunc (){
+    fetchData()
+  }
 
   return (
-    <TableContainer component={Paper} sx={{ maxWidth: 650 }}>
+    <>
+    <FileUpload callback = {callbackFunc} />
+    <TableContainer component={Paper} sx={{ minWidth: 650, maxHeight: "80vh"}}>
       <Table aria-label="customized table">
         <TableHead>
           <TableRow>
@@ -98,6 +120,9 @@ function ReportTable() {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </TableContainer>
+    <AlertDialog open={alertOpen} message={alertMessage} onClose={closeAlert} />
+
+    </>
 
   );
 }

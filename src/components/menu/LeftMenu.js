@@ -1,18 +1,37 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Menu, MenuItem, Sidebar, useProSidebar } from 'react-pro-sidebar';
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import { Dashboard, LoginOutlined } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const LeftMenu = () => {
+  const { collapseSidebar } = useProSidebar();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('email');
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
-    <nav>
-      <ul>
-        <li>
-          <Link to="/dashboard">Dashboard</Link>
-        </li>
-        <li>
-          <Link to="/logout">Logout</Link>
-        </li>
-      </ul>
-    </nav>
+    <Sidebar style={{ height: "110vh", backgroundColor: "gray" }}>
+      <Menu>
+        <MenuItem
+          icon={<MenuOutlinedIcon />}
+          onClick={() => {
+            collapseSidebar();
+          }}
+          style={{ textAlign: "center" }}
+        ></MenuItem>
+
+        <MenuItem icon={<Dashboard/>}>Dashboard</MenuItem>
+
+        <MenuItem icon={<LoginOutlined/>} onClick={handleLogout}>
+          Logout
+        </MenuItem>
+      </Menu>
+    </Sidebar>
   );
 };
 

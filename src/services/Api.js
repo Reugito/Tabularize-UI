@@ -5,7 +5,7 @@ const token = localStorage.getItem('token');
 
   if (!token) {
     // If token is not present, redirect to the login page
-     <Navigate to="/login" />;
+     <Navigate to="/" />;
   }
 const handleResponse = async (response) => {
   if (!response.ok) {
@@ -42,6 +42,7 @@ const commonApi = {
     const requestOptions = {
       method,
       headers: {
+        'Authorization': token,
         ...headers,
       },
       body: data,
@@ -56,11 +57,11 @@ const commonApi = {
   },
 
   login(username, password) {
-    return commonApi.request('/auth/login', 'POST', { username, password });
+    return commonApi.request('/user/login', 'POST', { username, password });
   },
 
   register(data) {
-    return commonApi.request('/auth/register', 'POST', data);
+    return commonApi.request('/user/register', 'POST', data);
   },
 
   uploadFile(formData) {

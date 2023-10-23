@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../services/Api';
 import { useNavigate } from 'react-router-dom';
+import AlertDialog from "../alerts/AlertDialog";
 
 import '../login/Style.css'
 
@@ -10,12 +11,20 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const closeAlert = () => {
+    setAlertOpen(false);
+  }
+
   const navigate = useNavigate();
   const handleRegister = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     if (password !== confirmPassword) {
-      alert("Password Not Matching");
+      setAlertMessage("Password Not Matching");
+      setAlertOpen(true)
       return;
     }
 
@@ -24,13 +33,16 @@ function Register() {
       const response = await api.register(userData);
 
       if (response.status === true) {
+        setAlertMessage('Success '+response.message);
         window.location.reload();
+      }else{
+        setAlertMessage('Failed '+ response.message);
       }
 
-      alert('Registration successful', response);
     } catch (error) {
-      alert('Registration error', error);
+      setAlertMessage('Registration error'+error.message);
     }
+    setAlertOpen(true)
   }
 
   return (
@@ -45,18 +57,20 @@ function Register() {
         required
       />
       <input
+      required
         type="email"
         placeholder="Email Address"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        required
+        
       />
       <input
+      required
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        required
+        
       />
       <input
         type="password"
@@ -67,6 +81,8 @@ function Register() {
       />
       <button type="button" onClick={handleRegister} id="sign-up-btn">Sign Up</button>
     </form>
+    <AlertDialog open={alertOpen} message={alertMessage} onClose={closeAlert} />
+
     </div>
   );
 }

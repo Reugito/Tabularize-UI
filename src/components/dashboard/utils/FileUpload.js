@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import api from '../../../services/Api';
-
-function FileUpload() {
+import './ReportTable.css';
+import AlertDialog from '../../alerts/AlertDialog';
+function FileUpload({ callback }) {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -12,27 +15,35 @@ function FileUpload() {
     if (selectedFile) {
       const formData = new FormData();
       formData.append('file', selectedFile);
-      console.log("File data ", formData)
   
       try {
         const response = await api.uploadFile(formData);
-        // Handle successful file upload
-        console.log('File uploaded successfully:', response);
+        if (response.status == true){
+          setAlertMessage('File uploaded successfully: ' + response.message);
+          callback()
+        }else{
+          setAlertMessage('File upload error: ' + response.message);
+        }
+        
       } catch (error) {
-        // Handle upload error
-        console.error('File upload error:', error);
+        setAlertMessage('File upload error: ' + error.message);
       }
     } else {
-      // Handle case where no file is selected
-      console.error('No file selected for upload');
-    }
+      setAlertMessage( 'No file selected for upload');
+    }    
+    setAlertOpen(true);
   }
-  
+
+  const closeAlert = () => {
+    setAlertOpen(false);
+  }
 
   return (
-    <div>
+    <div className="file-upload-container">
       <input type="file" accept=".csv, .json, .xls" onChange={handleFileChange} />
-      <button onClick={handleFileUpload}>Upload</button>
+      <button onClick={handleFileUpload} style={{ backgroundColor: "gray", marginLeft: "10px" }}>Upload</button>
+
+      <AlertDialog open={alertOpen} message={alertMessage} onClose={closeAlert} />
     </div>
   );
 }

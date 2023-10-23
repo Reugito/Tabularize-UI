@@ -9,7 +9,7 @@ function Home() {
     <>
       <div className="container">
         <div className="form-container">
-          <h1 id="header">{showLogin ? 'Sign In' : 'Sign Up'}</h1>
+          <h1 id="header">{''}</h1>
           <div className="toggle-button">
             <button
               id="sign-in-toggle"
