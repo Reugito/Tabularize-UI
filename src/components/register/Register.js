@@ -20,7 +20,7 @@ function Register() {
 
   const navigate = useNavigate();
   const handleRegister = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault(); 
 
     if (password !== confirmPassword) {
       setAlertMessage("Password Not Matching");
